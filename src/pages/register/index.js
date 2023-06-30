@@ -17,14 +17,11 @@ const RegisterForm = () => {
 
   const addNewUser = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:8081/register",
-        {
-          name: username,
-          email: email,
-          password: password,
-        }
-      );
+      const response = await axios.post("http://localhost:8081/register", {
+        name: username,
+        email: email,
+        password: password,
+      });
 
       console.log("response", response);
       handleNewUser();
@@ -41,14 +38,40 @@ const RegisterForm = () => {
     }, 5000);
   };
 
+  const validateEmail = () => {
+    if (!email.includes("@")) {
+      setErrorMessage("Email should contain '@'");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 2000);
+      return false;
+    }
+    return true;
+  };
+
+  const validatePassword = () => {
+    if (password.length < 6 || !/\d/.test(password)) {
+      setErrorMessage(
+        "Password should be at least 6 characters long and contain at least one number"
+      );
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 2000);
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = () => {
     if (username && email && password) {
-      addNewUser();
+      if (validateEmail() && validatePassword()) {
+        addNewUser();
+      }
     } else {
       setErrorMessage("* Please fill in all the fields");
       setTimeout(() => {
         setErrorMessage("");
-      }, 1000);
+      }, 2000);
     }
   };
 
@@ -72,11 +95,12 @@ const RegisterForm = () => {
           />
           <input
             type="password"
+            placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
           <button onClick={handleSubmit}>Register</button>
-          {successMessage && <p>{successMessage}</p>}
+          {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
           {errorMessage && (
             <p className={styles.errorMessage}>{errorMessage}</p>
           )}

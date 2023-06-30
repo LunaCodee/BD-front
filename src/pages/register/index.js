@@ -27,7 +27,7 @@ const RegisterForm = () => {
       );
 
       console.log("response", response);
-      router.push("/");
+      handleNewUser();
     } catch (err) {
       console.log("err", err);
     }
@@ -44,7 +44,6 @@ const RegisterForm = () => {
   const handleSubmit = () => {
     if (username && email && password) {
       addNewUser();
-      handleNewUser();
     } else {
       setErrorMessage("* Please fill in all the fields");
       setTimeout(() => {
@@ -73,7 +72,6 @@ const RegisterForm = () => {
           />
           <input
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />

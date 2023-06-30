@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import QuestionCard from "../../components/questionCard/questionCard"
+import QuestionCard from "../../components/questionCard/questionCard";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import styles from "./styles.module.css";
 
 const QuestionsPage = () => {
   const [questions, setQuestions] = useState([]);
@@ -11,7 +12,8 @@ const QuestionsPage = () => {
     const fetchQuestions = async () => {
       try {
         const response = await axios.get("http://localhost:8081/questions");
-        const questionArray = Object.values(response.data);
+        const questionArray = response.data.questions;
+        console.log(response.data.questions)
         setQuestions(questionArray);
       } catch (error) {
         console.log("Error fetching questions:", error);
@@ -24,16 +26,17 @@ const QuestionsPage = () => {
   return (
     <>
       <Navbar />
-      <div>
-        <h1>All Questions</h1>
-        {questions.map((question) => (
-          <QuestionCard
-            key={question.id}
-            id={question.id}
-            question_text={question.question_text}
-            answers_ids={question.answers_ids|| []}
-          />
-        ))}
+      <div className={styles.container}>
+        <div className={styles.questionList}>
+          {questions.map((question) => (
+            <QuestionCard
+              key={question._id}
+              id={question._id}
+              question_text={question.question_text}
+              answers_ids={question.answers_ids || []}
+            />
+          ))}
+        </div>
       </div>
       <Footer />
     </>

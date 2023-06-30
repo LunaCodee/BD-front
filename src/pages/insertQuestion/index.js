@@ -9,15 +9,23 @@ const QuestionForm = () => {
   const router = useRouter();
   const [questionText, setQuestionText] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:8081/question", {
-        question_text: questionText,
-      });
+      const token = localStorage.getItem("jwt");
 
-      console.log("Question posted successfully:", response.data);
+      const response = await axios.post(
+        "http://localhost:8081/question",
+        {
+          question_text: questionText,
+        },
+        {
+          headers: {
+            authorization: token, 
+          },
+        }
+      );
+
+      console.log("Question posted successfully:", response);
 
       router.push("/questions");
     } catch (err) {
@@ -31,7 +39,6 @@ const QuestionForm = () => {
       <div className={styles.container}>
         <h1 className={styles.title}>Ask Your Question:</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
-
           <textarea
             value={questionText}
             onChange={(event) => setQuestionText(event.target.value)}

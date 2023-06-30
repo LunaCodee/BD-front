@@ -13,6 +13,9 @@ const DesktopMenu = () => {
         <li>
         <a href="/questions">All questions</a>
         </li>
+        <li>
+        <a href="/insertQuestion">Ask NEW question</a>
+        </li>
       </ul>
     );
   };

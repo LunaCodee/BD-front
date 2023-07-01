@@ -1,3 +1,59 @@
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import Navbar from "../../components/Navbar/Navbar";
+// import Footer from "../../components/Footer/Footer";
+// import styles from "./styles.module.css";
+// import { useRouter } from "next/router";
+
+// const QuestionPage = () => {
+//   const router = useRouter();
+//   const { id } = router.query;
+
+//   const [question, setQuestion] = useState(null);
+//   const [answers, setAnswers] = useState([]);
+
+//   useEffect(() => {
+//     const fetchQuestion = async () => {
+//       try {
+//         const response = await axios.get(`http://localhost:8081/question/${id}`);
+//         const fetchedQuestion = response.data.question;
+//         setQuestion(fetchedQuestion);
+//         setAnswers(fetchedQuestion.answers_ids);
+//       } catch (error) {
+//         console.log("Error fetching question:", error);
+//       }
+//     };
+
+//     if (id) {
+//       fetchQuestion();
+//     }
+//   }, [id]);
+
+//   return (
+//     <>
+//       <Navbar />
+//       <div className={styles.container}>
+//         {question ? (
+//           <div className={styles.question}>
+//             <h1 className={styles.questionText}>{question.question_text}</h1>
+//             <h2>Answers:</h2>
+//             <ul>
+//               {question.answers_ids.map((answerId) => (
+//                 <li key={answerId}>{answerId}</li>
+//               ))}
+//             </ul>
+//           </div>
+//         ) : (
+//           <div>Loading...</div>
+//         )}
+//       </div>
+//       <Footer />
+//     </>
+//   );
+// };
+
+// export default QuestionPage;
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../components/Navbar/Navbar";
@@ -7,43 +63,92 @@ import { useRouter } from "next/router";
 
 const QuestionPage = () => {
   const router = useRouter();
-  const { id } = router.query;
-
+  const { id } = router.query; // get the question id from the route
   const [question, setQuestion] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  const [newAnswer, setNewAnswer] = useState('');
 
   useEffect(() => {
-    const fetchQuestion = async () => {
+    const fetchQuestionAndAnswers = async () => {
       try {
         const response = await axios.get(`http://localhost:8081/question/${id}`);
-        const fetchedQuestion = response.data.question;
-        setQuestion(fetchedQuestion);
+        setQuestion(response.data.question);
+        
+        const answerResponse = await axios.get(`http://localhost:8081/question/${id}/answers`);
+        setAnswers(answerResponse.data.response);
       } catch (error) {
-        console.log("Error fetching question:", error);
+        console.log("Error fetching question and answers:", error);
       }
     };
 
     if (id) {
-      fetchQuestion();
+      fetchQuestionAndAnswers();
     }
   }, [id]);
+
+  const handleNewAnswerChange = (event) => {
+    setNewAnswer(event.target.value);
+  };
+
+  const handleNewAnswerSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await axios.post(`http://localhost:8081/question/${id}/answers`, { answer_text: newAnswer });
+      setNewAnswer('');
+      const updatedAnswersResponse = await axios.get(`http://localhost:8081/question/${id}/answers`);
+      setAnswers(updatedAnswersResponse.data.response);
+    } catch (error) {
+      console.log('Error posting answer:', error);
+    }
+  };
+
+  const handleLike = async (answerId) => {
+    try {
+      await axios.post(`http://localhost:8081/answer/${answerId}/like`);
+      const updatedAnswersResponse = await axios.get(`http://localhost:8081/question/${id}/answers`);
+      setAnswers(updatedAnswersResponse.data.response);
+    } catch (error) {
+      console.log('Error liking answer:', error);
+    }
+  };
+
+  const handleDislike = async (answerId) => {
+    try {
+      await axios.post(`http://localhost:8081/answer/${answerId}/dislike`);
+      const updatedAnswersResponse = await axios.get(`http://localhost:8081/question/${id}/answers`);
+      setAnswers(updatedAnswersResponse.data.response);
+    } catch (error) {
+      console.log('Error disliking answer:', error);
+    }
+  };
 
   return (
     <>
       <Navbar />
       <div className={styles.container}>
-        {question ? (
-          <div className={styles.question}>
-            <h1 className={styles.questionText}>{question.question_text}</h1>
-            <h2>Answers:</h2>
-            <ul>
-              {question.answers_ids.map((answerId) => (
-                <li key={answerId}>{answerId}</li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <div>Loading...</div>
-        )}
+        <h1 className={styles.questionText}>{question?.question_text}</h1>
+        <ul className={styles.answerList}>
+          {answers.map((answer) => (
+            <li key={answer._id} className={styles.answerItem}>
+              {answer.answer_text} - Likes: {answer.gained_likes_number} - Dislikes: {answer.gained_dislikes_number}
+
+              <button onClick={() => handleLike(answer._id)} className={styles.voteButton}>Like</button>
+              <button onClick={() => handleDislike(answer._id)} className={styles.voteButton}>Dislike</button>
+            </li>
+          ))}
+        </ul>
+        <form onSubmit={handleNewAnswerSubmit}>
+          <textarea
+            value={newAnswer}
+            onChange={handleNewAnswerChange}
+            placeholder="Your answer..."
+            className={styles.newAnswerInput}
+          />
+          <button type="submit" className={styles.submitButton}>
+            Submit answer
+          </button>
+        </form>
       </div>
       <Footer />
     </>

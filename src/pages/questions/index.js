@@ -4,8 +4,10 @@ import QuestionCard from "../../components/questionCard/questionCard";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import styles from "./styles.module.css";
+import { useRouter } from "next/router";
 
 const QuestionsPage = () => {
+  const router = useRouter();
   const [questions, setQuestions] = useState([]);
 
   useEffect(() => {

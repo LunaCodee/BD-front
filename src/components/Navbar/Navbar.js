@@ -8,7 +8,7 @@ const DesktopMenu = () => {
     return (
       <ul className={styles.menu}>
         <li>
-          <a href="/">Main page</a>
+          <a href="/">Log in</a>
         </li>
         <li>
         <a href="/questions">All questions</a>

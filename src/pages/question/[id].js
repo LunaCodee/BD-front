@@ -60,6 +60,8 @@ import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import styles from "./styles.module.css";
 import { useRouter } from "next/router";
+import thumbUpImage from '../../assets/thumb-up.png';
+import thumbDownImage from '../../assets/thumb-down.png';
 
 const QuestionPage = () => {
   const router = useRouter();
@@ -123,36 +125,80 @@ const QuestionPage = () => {
     }
   };
 
-  return (
-    <>
-      <Navbar />
-      <div className={styles.container}>
-        <h1 className={styles.questionText}>{question?.question_text}</h1>
-        <ul className={styles.answerList}>
-          {answers.map((answer) => (
-            <li key={answer._id} className={styles.answerItem}>
-              {answer.answer_text} - Likes: {answer.gained_likes_number} - Dislikes: {answer.gained_dislikes_number}
+//   return (
+//     <>
+//       <Navbar />
+//       <div className={styles.container}>
+//         <h1 className={styles.questionText}>{question?.question_text}</h1>
+//         <ul className={styles.answerList}>
+//           {answers.map((answer) => (
+//             <li key={answer._id} className={styles.answerItem}>
+//               {answer.answer_text} - Likes: {answer.gained_likes_number} - Dislikes: {answer.gained_dislikes_number}
 
-              <button onClick={() => handleLike(answer._id)} className={styles.voteButton}>Like</button>
-              <button onClick={() => handleDislike(answer._id)} className={styles.voteButton}>Dislike</button>
-            </li>
-          ))}
-        </ul>
-        <form onSubmit={handleNewAnswerSubmit}>
-          <textarea
-            value={newAnswer}
-            onChange={handleNewAnswerChange}
-            placeholder="Your answer..."
-            className={styles.newAnswerInput}
-          />
-          <button type="submit" className={styles.submitButton}>
-            Submit answer
-          </button>
-        </form>
-      </div>
-      <Footer />
-    </>
-  );
+//               <button onClick={() => handleLike(answer._id)} className={styles.voteButton}>Like</button>
+//               <button onClick={() => handleDislike(answer._id)} className={styles.voteButton}>Dislike</button>
+//             </li>
+//           ))}
+//         </ul>
+//         <form onSubmit={handleNewAnswerSubmit}>
+//           <textarea
+//             value={newAnswer}
+//             onChange={handleNewAnswerChange}
+//             placeholder="Your answer..."
+//             className={styles.newAnswerInput}
+//           />
+//           <button type="submit" className={styles.submitButton}>
+//             Submit answer
+//           </button>
+//         </form>
+//       </div>
+//       <Footer />
+//     </>
+//   );
+// };
+
+return (
+  <>
+    <Navbar />
+    <div className={styles.container}>
+      <h1 className={styles.questionText}>{question?.question_text}</h1>
+      <ul className={styles.answerList}>
+        {answers.map((answer) => (
+          <li key={answer._id} className={styles.answerItem}>
+            <div className={styles.answerText}>{answer.answer_text}</div>
+            <div className={styles.voteContainer}>
+              <div className={styles.voteSection}>
+                <div className={styles.likeCount}>{answer.gained_likes_number}</div>
+                <button onClick={() => handleLike(answer._id)} className={styles.voteButton}>
+                  <img src={thumbUpImage.src} alt="Thumb Up" className={styles.thumbIcon} />
+                </button>
+              </div>
+              <div className={styles.voteSection}>
+                <div className={styles.dislikeCount}>{answer.gained_dislikes_number}</div>
+                <button onClick={() => handleDislike(answer._id)} className={styles.voteButton}>
+                  <img src={thumbDownImage.src} alt="Thumb Down" className={styles.thumbIcon} />
+                </button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <form onSubmit={handleNewAnswerSubmit}>
+        <textarea
+          value={newAnswer}
+          onChange={handleNewAnswerChange}
+          placeholder="Your answer..."
+          className={styles.newAnswerInput}
+        />
+        <button type="submit" className={styles.submitButton}>
+          Submit answer
+        </button>
+      </form>
+    </div>
+    <Footer />
+  </>
+);
 };
+
 
 export default QuestionPage;
